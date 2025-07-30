@@ -12,6 +12,16 @@ async function loadOpinions() {
   }
 }
 
+async function loadOpinion(id) {
+  try {
+    const dbFileData = await fs.readFile('./db.json');
+    const parsedData = JSON.parse(dbFileData);
+    return parsedData.opinions.filter((item) => item.id == id);
+  } catch (error) {
+    return [];
+  }
+}
+
 async function saveOpinion(opinion) {
   const opinions = await loadOpinions();
   const newOpinion = { id: new Date().getTime(), votes: 0, ...opinion };

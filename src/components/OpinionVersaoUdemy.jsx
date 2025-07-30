@@ -1,31 +1,29 @@
-import { use, useEffect } from "react";
+import { use } from "react";
 import { OpinionsContext } from "../store/opinions-context";
 import { useOptimistic } from "react";
 import { useActionState } from "react";
-import { useOptimisticWithPending } from "../hooks/useOptimisticWithPending";
 
-export function Opinion({ opinion: { id, title, body, userName, votes } }) {
+export function OpinionVersaoUdemy({ opinion: { id, title, body, userName, votes } }) {
 
   const { upvoteOpinion, downvoteOpinion } = use(OpinionsContext);
 
+  const [optimisticVotes, setVotesOptimistically] = useOptimistic(
+    votes,
+    (prevVotes, mode) => (mode === 'up' ? prevVotes + 1 : prevVotes - 1)
+  );
 
-  const {
-    optimisticValue,
-    executeAction,
-    isProcessing
-  } = useOptimisticWithPending(votes)
-
-
-
-
-  async function handleButton(tipo) {
-
-    if (tipo == 'upvote') {
-      executeAction(optimisticValue + 1, async () => await upvoteOpinion(id));
-    } else {
-      executeAction(optimisticValue - 1, async () => await downvoteOpinion(id));
-    }
+  async function upvoteAction() {
+    setVotesOptimistically('up');
+    await upvoteOpinion(id);
   }
+
+  async function downvoteAction() {
+    setVotesOptimistically('down');
+    await downvoteOpinion(id);
+  }
+
+  // const [upvoteFromState, upvoteFormAction, upvotePending] = useActionState(upvoteAction);
+  // const [downvoteFromState, downvoteFormAction, downvotePending] = useActionState(downvoteAction);
 
 
   return (
@@ -37,7 +35,7 @@ export function Opinion({ opinion: { id, title, body, userName, votes } }) {
       <p>{body}</p>
       <form className="votes">
         <button
-          formAction={() => handleButton('upvote')}
+          formAction={upvoteAction}
         // disabled={upvotePending || downvotePending}
         >
           <svg
@@ -57,11 +55,10 @@ export function Opinion({ opinion: { id, title, body, userName, votes } }) {
           </svg>
         </button>
 
-        <span>isProcessing: {isProcessing ? 'sim' : 'nao'}</span>
-        <span>{optimisticValue}</span>
+        <span>{optimisticVotes}</span>
 
         <button
-          formAction={() => handleButton('downvote')}
+          formAction={downvoteAction}
         // disabled={upvotePending || downvotePending}
         >
           <svg

@@ -43,7 +43,7 @@ export function OpinionsContextProvider({ children }) {
     })
 
     if (!response.ok) {
-      return;
+      throw new Error('upvoteOpinion error');
     }
 
     setOpinions((prevOpinions) => {
@@ -62,7 +62,7 @@ export function OpinionsContextProvider({ children }) {
     })
 
     if (!response.ok) {
-      return;
+      throw new Error('downvoteOpinion error');
     }
     setOpinions((prevOpinions) => {
       return prevOpinions.map((opinion) => {
