@@ -12,14 +12,18 @@ export function useOptimisticWithPending(initialValue) {
             setOptimisticValue(newOptimisticValue);
             setPendingActions(prev => [...prev, actionId]);
             await actionFn();
-        } catch (error) {
-            setOptimisticValue(stableValue);
-        } finally {
             setPendingActions(prev => {
                 const updated = prev.filter(id => id !== actionId);
                 if (updated.length === 0) {
                     setStableValue(newOptimisticValue);
                 }
+                return updated;
+            });
+        } catch (error) {
+            setOptimisticValue(stableValue);
+        } finally {
+            setPendingActions(prev => {
+                const updated = prev.filter(id => id !== actionId);
                 return updated;
             });
         }
