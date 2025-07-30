@@ -18,13 +18,12 @@ export function Opinion({ opinion: { id, title, body, userName, votes } }) {
 
 
 
-  async function handleButton(tipo) {
+  function handleUpvote() {
+    executeAction(optimisticValue + 1, async () => await upvoteOpinion(id));
+  }
 
-    if (tipo == 'upvote') {
-      executeAction(optimisticValue + 1, async () => await upvoteOpinion(id));
-    } else {
-      executeAction(optimisticValue - 1, async () => await downvoteOpinion(id));
-    }
+  function handleDownvote() {
+    executeAction(optimisticValue - 1, async () => await downvoteOpinion(id));
   }
 
 
@@ -37,7 +36,7 @@ export function Opinion({ opinion: { id, title, body, userName, votes } }) {
       <p>{body}</p>
       <form className="votes">
         <button
-          formAction={() => handleButton('upvote')}
+          formAction={handleUpvote}
         // disabled={upvotePending || downvotePending}
         >
           <svg
@@ -57,11 +56,11 @@ export function Opinion({ opinion: { id, title, body, userName, votes } }) {
           </svg>
         </button>
 
-        <span>isProcessing: {isProcessing ? 'sim' : 'nao'}</span>
+        {/* <span>isProcessing: {isProcessing ? 'sim' : 'nao'}</span> */}
         <span>{optimisticValue}</span>
 
         <button
-          formAction={() => handleButton('downvote')}
+          formAction={handleDownvote}
         // disabled={upvotePending || downvotePending}
         >
           <svg
